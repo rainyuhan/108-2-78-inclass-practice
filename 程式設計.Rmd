@@ -432,3 +432,473 @@ class(garbageRoutes)
 CDC_chatbox <- readr::read_csv("http://od.cdc.gov.tw/pr/CDC_chatbox.csv")
 ```
 
+```{r}
+example <- list(
+  name=c("小明","小花","小新","美美"),
+  height=c(175,166,170,160),
+  weight=c(77,NA,60,43),
+  birthday=lubridate::ymd(c("1998-03-11","1999-12-22","1995-08-22","2001-10-10")),
+  hobby=c("美食 旅遊","旅遊 時尚","3C 美食","音樂 旅遊"),
+  residence=c("Taipei","New Taipei","Taichung","Kaohsiung"),
+  allowance=factor(c("0-1000","1001-2000","2000+","1001-2000")),
+  bloodType=c("A","B","B","O")
+)
+```
+```{r}
+example$name[c(T, F, T, F)]
+```
+```{r}
+str(example[c("name","height")])
+
+pick_above170 <- example$height >= 170
+example$height
+c(175, 166, 170, 160) >= 170
+
+example$name[pick_above170]
+```
+```{r}
+source("https://www.dropbox.com/s/qsrw069n94k61lj/transcript100to103_list.R?dl=1")
+```
+```{r}
+str(transcript100to103)
+```
+```{r}
+# 各學屆2年級人數
+table(transcript100to103$學屆)
+# 各學屆2年級成績大於85年數
+table(transcript100to103$學屆[pick_above85])
+```
+```{r}
+# 只要成績大於85的
+pick_above85 <-
+  transcript100to103$`成績` > 85
+```
+```{r}
+# 各學屆2年級人數
+table(transcript100to103$學屆)
+# 各學屆2年級成績大於85人數
+table(transcript100to103$學屆[pick_above85])
+```
+```{r}
+example$birthday
+class(example$birthday)
+typeof(example$birthday)
+```
+```{r}
+print(example[c("name","birthday")])
+
+pick_after98 <- example$birthday >= lubridate::ymd("1998-01-01")
+example$name[pick_after98]
+```
+```{r}
+source("https://www.dropbox.com/s/16h6ggua6qtydci/exchangeRate.R?dl=1")
+```
+```{r}
+str(exchangeRate)
+```
+```{r}
+exchangeRate_after98 <-
+  list(
+    `期間`=exchangeRate$`期間`[pick_after98_01],
+    `幣別`=exchangeRate$`幣別`[pick_after98_01],
+    `匯率`=exchangeRate$`匯率`[pick_after98_01]
+    
+  )
+```
+```{r}
+# 只要1998年1月（含）以後的
+library(lubridate)
+pick_after98_01 <-
+  exchangeRate$期間 >= ymd("1998-01-01")
+```
+```{r}
+exchangeRate_after98 <-
+  list(
+    `期間`=exchangeRate$`期間`[pick_after98_01],
+    `幣別`=exchangeRate$`幣別`[pick_after98_01],
+    `匯率`=exchangeRate$`匯率`[pick_after98_01]
+  )
+```
+```{r}
+print(example[c("name","allowance")])
+
+pick_allowanceOver1000 <- example$allowance >= "1001-2000"
+example$name[pick_allowanceOver1000]
+```
+```{r}
+example$allowance <- 
+  ordered(example$allowance)
+```
+
+```{r}
+example$allowance <-
+  factor(
+    example$allowance,
+    levels=c("0-1000", "1001-2000", "2000+"),
+    ordered = T # 設定為可排序factor
+  )
+```
+
+```{r}
+pick_allowanceOver1000 <- example$allowance >= "1001-2000"
+example$name[pick_allowanceOver1000]
+```
+```{r}
+jsonlite::fromJSON("https://www.dropbox.com/s/3uijub7xheib405/list_victimAges_female.json?dl=1", simplifyDataFrame = F) -> list_victimAges_female
+```
+```{r}
+str(list_victimAges_female)
+View(list_victimAges_female$`數目`)
+sum(list_victimAges_female$`數目`)
+sum(list_victimAges_female$`數目`, na.rm=T)
+```
+```{r}
+levels(list_victimAges_female$年齡層) -> levels_ages
+print(levels_ages)
+```
+```{r}
+sum(list_victimAges_female$數目, na.rm=T)
+sum(list_victimAges_female$數目[pick_above30], na.rm = T)
+```
+
+```{r}
+# 先將類別資料設定成可排序類別資料
+list_victimAges_female$年齡層 <-
+  ordered(list_victimAges_female$年齡層)
+pick_above30 <- 
+  list_victimAges_female$年齡層 >= "30_39歲"
+```
+
+```{r}
+sum(list_victimAges_female$數目, na.rm=T)
+sum(list_victimAges_female$數目[pick_above30], na.rm = T)
+```
+
+```{r}
+print(example[c("name","bloodType")])
+
+pick_bloodB <- example$bloodType == "B"
+example$name[pick_bloodB]
+```
+```{r}
+sequenceNums <- c(11, 6, 8, 11, 12, 11, 3, 7, 10, 8)
+
+pick_evens <- (sequenceNums %% 2) == 0
+sequenceNums[pick_evens]
+```
+```{r}
+x <- c(1,5,8)
+y <- c(5,8)
+
+# x裡的元素值是不是屬於y集合
+x %in% y
+```
+
+```{r}
+print(example[c("name","residence")])
+
+set_TaipeiMetro <- c("Taipei","New Taipei")
+pick_fromTaipeiMetro <- example$residence %in% set_TaipeiMetro
+example$name[pick_fromTaipeiMetro]
+```
+```{r}
+str(transcript100to103)
+```
+
+```{r}
+pick_not_fromTaipeiMetro <- ! pick_fromTaipeiMetro
+# 或
+pick_not_fromTaipeiMetro <- !(example$residence %in% set_TaipeiMetro) # (..) 裡面會先運算完才做外面!的處理
+```
+
+```{r}
+print(example[c("name","residence")])
+
+example$name[pick_fromTaipeiMetro]
+example$name[pick_not_fromTaipeiMetro]
+```
+```{r}
+x2 <- c(1,NA,10)
+y2 <- c(-1,NA,20)
+
+x3 <- c(NA,"小花")
+y3 <- c(NA,"小華")
+```
+
+```{r}
+x2
+is.na(x2)
+```
+
+```{r}
+print(example[c("name","weight")])
+
+pick_na <- is.na(example$weight)
+example$name[pick_na]
+```
+```{r}
+0/0
+```
+```{r}
+list_victimAges_female$數目 <- as.integer(list_victimAges_female$數目)
+```
+```{r}
+print(example[c("name","hobby")])
+
+pick_loveFood <- stringr::str_detect(example$hobby,"美食")
+example$name[pick_loveFood]
+```
+```{r}
+jsonlite::fromJSON("https://data.ntpc.gov.tw/od/data/api/EDC3AD26-8AE7-4916-A00B-BC6048D19BF8?$format=json") ->
+  garbageRoutes
+```
+
+```{r}
+#  1 用typeof()函數查詢電腦實質上如何看待garbageRoutes。
+typeof(garbageRoutes)  
+#  2 用class()函數查詢電腦把它能進行的操作運算歸屬於哪一類型。
+class(garbageRoutes)
+```
+```{r}
+# 由linename元素判斷垃圾車有幾條路線。
+factor(garbageRoutes$linename) -> garbageRoutes$linename
+levels(garbageRoutes$linename)
+  
+# 由linename創造： 可篩選出下午路線的「要/不要」向量pick_afternoonRoutes。
+pick_afternoonRoutes <-
+  stringr::str_detect(
+    garbageRoutes$linename,
+    "下午"
+  )
+garbageRoutes$linename[pick_afternoonRoutes]
+```
+```{r}
+?str_detect
+```
+```{r}
+fruit <- c("apple", "banana", "pear", "pinapple")
+str_detect(fruit, "a")
+str_detect(fruit, "^a")
+str_detect(fruit, "a$")
+str_detect(fruit, "b")
+str_detect(fruit, "[aeiou]")
+
+# Also vectorised over pattern
+str_detect("aecfg", letters)
+
+# Returns TRUE if the pattern do NOT match
+str_detect(fruit, "^p", negate = TRUE)
+```
+```{r}
+CDC_chatbox <- readr::read_csv("http://od.cdc.gov.tw/pr/CDC_chatbox.csv")
+```
+```{r}
+str(example)
+pick_above170 <- example$height >= 170
+pick_bloodB <- example$bloodType == "B"
+pick_loveFood <- 
+  stringr::str_detect(example$hobby,"美食")
+pick_na <- is.na(example$weight)
+pick_after98 <- 
+  example$birthday >= lubridate::ymd("1998-01-01")
+set_TaipeiMetro <- c("Taipei","New Taipei")
+pick_fromTaipeiMetro <- 
+  example$residence %in% set_TaipeiMetro
+```
+```{r}
+str(example[c("name","hobby","bloodType")])
+
+example$name[
+    pick_loveFood & pick_bloodB
+  ]
+```
+```{r}
+example[c("name","birthday","residence")]
+
+example$name[
+  pick_after98 | !pick_fromTaipeiMetro
+]
+```
+```{r}
+example$name[
+  pick_after98 & pick_fromTaipeiMetro & pick_bloodB
+]
+```
+
+```{r}
+library(stringr)
+library(glue)
+```
+```{r}
+str_sub("410873002", 5, 6)
+```
+```{r}
+lubridate::ymd(
+  c("民國108年12月5日","民國98年10月5日")
+)
+```
+```{r}
+lubridate::ymd(
+  c(
+    "民國2019年12月05日",
+    "馬丁2019的12課05muydifícil",
+    "助教2019Emily12解說05真棒",
+    "2019R12課程05すごい",
+    "R程式2019的12期中考05とても変態"
+  )
+)
+```
+```{r}
+str_extract_all(
+  c("民國108年12月5日","民國98年10月5日"),
+  "(?<=民國)[0-9]{2,3}(?=年)"
+) # 回傳list 
+
+str_extract(
+  c("民國108年12月5日","民國98年10月5日"),
+  "(?<=民國)[0-9]{2,3}(?=年)"
+) # 回傳vector 
+```
+```{r}
+heartSutra <- c("舍利子，色不異空，空不異色；色即是空，空即是色。")
+str_view_all(heartSutra,"色") # 檢視
+str_count(heartSutra,"色") # 計數
+```
+```{r}
+studentIds <- c("410873029","410773005","410772035","410562123")
+# 取出學號中的入學屆為107或108
+str_view_all(studentIds,"(107|108)")
+
+str_view_all(studentIds, "107|108") # 可不寫()
+
+# 是否來自107或108學屆
+str_detect(studentIds, "107|108")
+```
+```{r}
+Ids <- c("A283743192","B829103720","A10920402","C291022384")
+
+str_view_all(Ids, "[AC]")
+str_detect(Ids, "[AC]") # 偵測 出現A、C
+
+str_extract(Ids,"[A-Z]") # 取出 A-Z的字元
+```
+```{r}
+strip1 <- "[0-9]"
+strip2 <- "(櫻桃|777|紅心)" # 字群組合strip因為等下放中間所以用()括起來
+strip3 <- "[A-Z]"
+myRegexSlotMachine <- paste0(strip1,strip2,strip3)
+print(myRegexSlotMachine)
+```
+```{r}
+claimA <- "我得到A檸檬99"
+claimB <- "我的是7777Z"
+claimC <- "我玩了兩次，一次是7蘋果H，另一次是5紅心J"
+# 顯示吻合的出象
+str_view(
+  c(claimA,claimB,claimC),
+  pattern=myRegexSlotMachine
+)
+# 是否有吻合的出象
+str_detect(
+  c(claimA,claimB,claimC),
+  pattern=myRegexSlotMachine
+)
+```
+```{r}
+headline <- "資科系的謝陳官乃飛鳶書院三大名師，其中謝無雙的策略運算，陳大器的數理資科學，及官求敗的運算成本更是打通演算思維任督二脈的三大好課。書院目前有陳一、陳二、陳三四這三名學生。"
+```
+
+```{r}
+# 顯示所有符合規則的
+str_view_all(headline, "謝陳官") # 固定字組
+str_count(headline,"謝陳官")
+
+str_view_all(headline, "[謝陳官]") # 有1個strip: 出象有3個可能字元 
+str_count(headline, "[謝陳官]")
+
+str_view_all(headline, "謝無雙|官求敗") # 有1個strip，出象有2個字組 
+str_count(headline, "謝無雙|官求敗")
+
+str_view_all(headline, "陳[^官]") # 固定字元＋有1個strip： 出象為排官的字元
+str_count(headline, "陳[^官]")
+```
+```{r}
+addresses <- c(
+  '臺中市后里區公館里尾社路385號',
+  '新竹市東區科學園路125號1樓',
+  '新竹市北區竹光路99號',
+  '金門縣金城鎮賢庵里山前33號',
+  '臺中市南屯區工業區二十四路23號1樓')
+```
+
+```{r}
+myRegexSlotMachine <- "[0-9]+號"
+print(myRegexSlotMachine)
+str_view_all(addresses,myRegexSlotMachine)
+str_extract(addresses,myRegexSlotMachine)
+
+str_view_all(addresses,"[0-9]+") # 樓號也會選到
+```
+```{r}
+phrase <- c("唧唧复唧唧")
+```
+```{r}
+# 目標是後面的唧唧
+target_regex2 <- "唧唧"
+pattern <- glue::glue("{target_regex2}$")
+print(pattern)
+str_view(phrase, pattern) 
+```
+```{r}
+twDate <-  c("民國108年12月5日","民國98年10月5日")
+
+library(stringr)
+# 準備regex: 
+## 取出：「前有」民國，「後有」年的「數字」「們」
+## "(?<={A_regex}){target_regex}(?={B_regex})"
+
+target_regex <- "[0-9]+"
+A_regex <- "民國"
+B_regex <- "年"
+
+regex_pattern <- glue::glue(
+  "(?<={A_regex}){target_regex}(?={B_regex})"
+  )
+
+print(regex_pattern)
+
+## 如果同學已經很熟就可以直接寫
+regex_pattern <-
+  "(?<=民國)[0-9]+(?=年)"
+
+# 取出民國年，計算西元年
+year <- 
+  str_extract(
+    twDate,
+    regex_pattern)
+westernYear <- as.integer(year)+1911
+
+# 替換民國xx年的xx成西元年數字
+str_replace(
+  twDate,
+  regex_pattern,  # 要換掉的文字
+  as.character(westernYear) # 要替換的內容
+) -> twDate_reformat
+print(twDate_reformat)
+
+
+lubridate::ymd(twDate_reformat)
+```
+```{r}
+addresses <- c(
+  '臺中市后里區公館里尾社路385號',
+  '新竹市東區科學園路125號1樓'
+  )
+```
+
+```{r}
+str_extract_all(
+  "我的名字8293叫17380小abce明",
+  "[\u4E00-\u9FFF]+")
+```
+
